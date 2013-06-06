@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <link href='https://fonts.googleapis.com/css?family=Chivo:900' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <title>Epiphany by Distrotech</title>
+  </head>
+
+  <body>
+    <div id="container">
+      <div class="inner">
+
+        <header>
+          <h1>Epiphany</h1>
+          <h2>Mirror of git://git.gnome.org/epiphany</h2>
+        </header>
+
+        <section id="downloads" class="clearfix">
+          <a href="https://github.com/Distrotech/epiphany/zipball/master" id="download-zip" class="button"><span>Download .zip</span></a>
+          <a href="https://github.com/Distrotech/epiphany/tarball/master" id="download-tar-gz" class="button"><span>Download .tar.gz</span></a>
+          <a href="https://github.com/Distrotech/epiphany" id="view-on-github" class="button"><span>View on GitHub</span></a>
+        </section>
+
+        <hr>
+
+        <section id="main_content">
+          <p>Epiphany is a GNOME web browser based on the WebKit rendering engine.
+The name meaning:
+"An intuitive grasp of reality through
+something (as an event) usually simple and striking"</p>
+
+<p>MANIFESTO</p>
+
+<p>A web browser is more than an application, it is a way of thinking, it is
+a way of seeing the world. Epiphany's principles are simplicity and standards
+compliance.</p>
+
+<p>Simplicity:</p>
+
+<p>Epiphany aims to utilize the simplest interface possible for a browser.  Keep
+in mind that simple does not necessarily mean less powerful.  We believe
+the commonly used browsers of today are too big, buggy, and bloated. Epiphany
+addresses simplicity with a small browser designed for the web -- not mail,
+newsgroups, file management, instant messenging or coffee making.  The UNIX
+philosophy is to design small tools that do one thing, and do it well.</p>
+
+<p>Epiphany also address simplicity with modularity to make a light and powerful
+application.  If something can be implemented using external applications
+or components, we use it rather than wasting resources in the web browser.
+Integration with other desktop applications can also be achieved using DBus
+and the ever popular command line.</p>
+
+<p>Other tasks like mail can be handled with your favorite e-mail application
+(Evolution, pine, mutt, balsa, pronto, whatever).</p>
+
+<p>Standards compliance:</p>
+
+<p>The introduction of non-standard features in browsers could make it difficult
+or impossible to use alternative products like Epiphany if developers embrace
+them. Alternative (standards complying) browsers could not be able to
+fully access web sites making use of these features.  The success of
+non-standard features can ultimately lead to forcing one browser, on
+one platform to dominate the market.</p>
+
+<p>Standards compliance ensures the freedom of choice.  Epiphany aims to achieve
+this.</p>
+
+<p>USER INTERFACE LINES</p>
+
+<ul>
+<li>HIG compliance</li>
+</ul><p>Epiphany is going to follow latest version of the GNOME Human Interface
+Guidelines. Unless there are very serious reasons to make an exception not
+following it will be considered a bug.
+"I follow the HIG only when I like it" is not a legitimate approach.
+Any areas where we diverge from the HIG will communicated
+to the HIG team for future consideration.</p>
+
+<ul>
+<li>GNOME integration</li>
+</ul><p>Epiphany's main goal is to be integrated with the GNOME desktop.
+We dont aim to make epiphany usable outside GNOME. If someone will like
+to use it anyway, it's just a plus. Ex: Making people happy that
+don't have control center installed is not a good reason
+to have mime configuration in epiphany itself.</p>
+
+<ul>
+<li>Simple design</li>
+</ul><p>Feature bloat and user interface clutter is evil :)</p>
+
+<ul>
+<li>Preferences</li>
+</ul><p>We will follow the new GNOME policy about preferences.
+I think Havoc Pennington already explained it a lot
+better than I could ever do.
+<a href="http://www106.pair.com/rhp/free-software-ui.html">http://www106.pair.com/rhp/free-software-ui.html</a></p>
+
+<ul>
+<li>User target</li>
+</ul><p>We target non-technical users by design.
+This happens to be 90% of the user population.
+(Technical details should not exposed in the interface)
+We target web users, we dont directly target web developers.
+A few geek-oriented feautures can be kept as
+long as they are non-obtrusive.</p>
+
+<p>REQUIREMENTS</p>
+
+<p>You will need a complete installation of GNOME 2.x desktop.
+The required WebKit version will be specified in the release notes.</p>
+
+<p>HOW TO HELP</p>
+
+<p>You can report new bugs at
+ <a href="http://bugzilla.gnome.org/enter_bug.cgi?product=epiphany">http://bugzilla.gnome.org/enter_bug.cgi?product=epiphany</a>
+And feel free to send patches.</p>
+
+<p>About new feautures I'll just quote Metacity FAQ.</p>
+
+<p>Q: Will you add my feature?</p>
+
+<p>A: If it makes sense to turn on unconditionally,
+   or is genuinely a harmless preference that I would not
+   be embarrassed to put in a simple, uncluttered, user-friendly
+   configuration dialog.</p>
+
+<p>If the only rationale for your feature is that other
+   [browsers] have it, or that you are personally used to it, or something
+   like that, then I will not be impressed. [Epiphany] is firmly in the
+   "choose good defaults" camp rather than the "offer 6 equally broken
+   ways to do it, and let the user pick one" camp.</p>
+
+<p>Don't let this discourage patches and fixes - I love those. ;-)
+   Just be prepared to hear the above objections if your patch
+   adds some crack-ridden configuration option.</p>
+
+<p>CONTACTS</p>
+
+<p>Epiphany Mailing List <a href="mailto:epiphany-list@gnome.org">epiphany-list@gnome.org</a></p>
+        </section>
+
+        <footer>
+          Epiphany is maintained by <a href="https://github.com/Distrotech">Distrotech</a><br>
+          This page was generated by <a href="http://pages.github.com">GitHub Pages</a>. Tactile theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.
+        </footer>
+
+        
+      </div>
+    </div>
+  </body>
+</html>
