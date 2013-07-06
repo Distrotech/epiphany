@@ -113,27 +113,9 @@ prefs_dialog_class_init (PrefsDialogClass *klass)
 }
 
 static void
-prefs_dialog_show_help (EphyDialog *dialog)
+prefs_dialog_show_help (GtkWindow *dialog)
 {
-	GtkWidget *window, *notebook;
-	int id;
-
-	static const char help_preferences[][28] = {
-		"general-preferences",
-		"fonts-and-style-preferences",
-		"privacy-preferences",
-		"language-preferences"
-	};
-
-	ephy_dialog_get_controls (dialog,
-				  "prefs_dialog", &window,
-				  "prefs_notebook", &notebook,
-				  NULL);
-
-	id = gtk_notebook_get_current_page (GTK_NOTEBOOK (notebook));
-	id = CLAMP (id, 0, 3);
-
-	ephy_gui_help (window, help_preferences[id]);
+	ephy_gui_help (GTK_WIDGET (dialog), "pref");
 }
 
 static void
@@ -897,7 +879,7 @@ prefs_dialog_response_cb (GtkDialog *widget,
 {
 	if (response == GTK_RESPONSE_HELP)
 	{
-		prefs_dialog_show_help (dialog);
+		prefs_dialog_show_help (widget);
 		return;
 	}
 		
