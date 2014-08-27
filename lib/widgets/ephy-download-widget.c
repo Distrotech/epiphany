@@ -28,7 +28,6 @@
 #include "ephy-debug.h"
 #include "ephy-embed-shell.h"
 #include "ephy-download.h"
-#include "totem-glow-button.h"
 
 #include <glib/gi18n.h>
 #include <webkit2/webkit2.h>
@@ -285,13 +284,23 @@ update_popup_menu (EphyDownloadWidget *widget)
 }
 
 static void
+set_needs_attention (EphyDownloadWidget *widget,
+                     gboolean needs_attention)
+{
+  if (needs_attention)
+    gtk_style_context_add_class (gtk_widget_get_style_context (widget->priv->button), "needs-attention");
+  else
+    gtk_style_context_remove_class (gtk_widget_get_style_context (widget->priv->button), "needs-attention");
+}
+
+static void
 widget_finished_cb (WebKitDownload *download,
                     EphyDownloadWidget *widget)
 {
   widget->priv->finished = TRUE;
   update_popup_menu (widget);
   update_download_label_and_tooltip (widget, _("Finished"));
-  totem_glow_button_set_glow (TOTEM_GLOW_BUTTON (widget->priv->button), TRUE);
+  set_needs_attention (widget, TRUE);
 }
 
 static void
@@ -311,7 +320,7 @@ widget_failed_cb (WebKitDownload *download,
   gtk_widget_set_tooltip_text (GTK_WIDGET (widget), error_msg);
   g_free (error_msg);
 
-  totem_glow_button_set_glow (TOTEM_GLOW_BUTTON (widget->priv->button), TRUE);
+  set_needs_attention (widget, TRUE);
 }
 
 static void
@@ -393,12 +402,6 @@ widget_destination_changed_cb (WebKitDownload *download,
 {
   update_download_destination (widget);
   add_popup_menu (widget);
-}
-
-static void
-stop_glowing (EphyDownloadWidget *widget)
-{
-  totem_glow_button_set_glow (TOTEM_GLOW_BUTTON (widget->priv->button), FALSE);
 }
 
 static void
@@ -559,6 +562,12 @@ smallify_label (GtkLabel *label)
 }
 
 static void
+menu_button_clicked_cb (EphyDownloadWidget *widget)
+{
+  set_needs_attention (widget, FALSE);
+}
+
+static void
 create_widget (EphyDownloadWidget *widget)
 {
 
@@ -572,7 +581,7 @@ create_widget (EphyDownloadWidget *widget)
   grid = gtk_grid_new ();
   gtk_grid_set_column_spacing (GTK_GRID (grid), 6);
 
-  button = totem_glow_button_new ();
+  button = gtk_button_new ();
   menu_button = gtk_menu_button_new ();
   gtk_menu_button_set_direction (GTK_MENU_BUTTON (menu_button), GTK_ARROW_UP);
 
@@ -608,7 +617,7 @@ create_widget (EphyDownloadWidget *widget)
   g_signal_connect (button, "clicked",
                     G_CALLBACK (download_clicked_cb), widget);
   g_signal_connect_swapped (menu_button, "clicked",
-                            G_CALLBACK (stop_glowing), widget);
+                            G_CALLBACK (menu_button_clicked_cb), widget);
 
   gtk_widget_show_all (button);
   gtk_widget_show_all (menu_button);
