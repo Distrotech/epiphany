@@ -587,6 +587,7 @@ create_widget (EphyDownloadWidget *widget)
   smallify_label (GTK_LABEL (text));
   gtk_misc_set_alignment (GTK_MISC (text), 0, 0.5);
   gtk_label_set_ellipsize (GTK_LABEL (text), PANGO_ELLIPSIZE_END);
+  gtk_style_context_add_class (gtk_widget_get_style_context (GTK_LABEL (text)), "filename");
 
   remain = gtk_label_new (_("Starting…"));
   smallify_label (GTK_LABEL (remain));
@@ -633,6 +634,10 @@ ephy_download_widget_init (EphyDownloadWidget *self)
                                   GTK_ORIENTATION_HORIZONTAL);
   context = gtk_widget_get_style_context (GTK_WIDGET (self));
   gtk_style_context_add_class (context, GTK_STYLE_CLASS_LINKED);
+
+  g_object_set (self,
+                "margin", 2,
+                NULL);
 }
 
 /**
