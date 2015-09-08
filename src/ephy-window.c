@@ -2903,6 +2903,8 @@ setup_notebook (EphyWindow *window)
 
 	notebook = GTK_NOTEBOOK (g_object_new (EPHY_TYPE_NOTEBOOK, NULL));
 
+	gtk_notebook_set_tab_pos (notebook, GTK_POS_LEFT);
+
 	g_signal_connect_after (notebook, "switch-page",
 				G_CALLBACK (notebook_switch_page_cb),
 				window);
