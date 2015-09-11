@@ -29,7 +29,7 @@
 #include "ephy-settings.h"
 #include "ephy-web-dom-utils.h"
 #include "ephy-uri-helpers.h"
-#include "uri-tester.h"
+#include "ephy-uri-tester.h"
 #include "ephy-web-overview.h"
 #include "ephy-web-extension-names.h"
 
@@ -51,7 +51,7 @@ struct _EphyWebExtensionPrivate
   guint registration_id;
   GArray *page_created_signals_pending;
 
-  UriTester *uri_tester;
+  EphyUriTester *uri_tester;
   EphyFormAuthDataCache *form_auth_data_cache;
   GHashTable *form_auth_data_save_requests;
   EphyWebOverviewModel *overview_model;
@@ -150,7 +150,7 @@ web_page_send_request (WebKitWebPage *web_page,
   if (g_str_has_prefix (request_uri, SOUP_URI_SCHEME_DATA))
       return FALSE;
 
-  ret = uri_tester_test_uri (extension->priv->uri_tester, request_uri, page_uri);
+  ret = ephy_uri_tester_test_uri (extension->priv->uri_tester, request_uri, page_uri);
   if (ret)
     g_debug ("Request '%s' blocked (page: '%s')", request_uri, page_uri);
 
@@ -1358,7 +1358,7 @@ ephy_web_extension_initialize (EphyWebExtension *extension,
   extension->priv->initialized = TRUE;
 
   extension->priv->extension = g_object_ref (wk_extension);
-  extension->priv->uri_tester = uri_tester_new (dot_dir);
+  extension->priv->uri_tester = ephy_uri_tester_new (dot_dir);
   if (!is_private_profile)
     extension->priv->form_auth_data_cache = ephy_form_auth_data_cache_new ();
 
