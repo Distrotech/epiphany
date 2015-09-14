@@ -55,14 +55,6 @@ struct _EphyDownload
 struct _EphyDownloadClass
 {
   GObjectClass parent_class;
-
-  void (* filename_suggested) (EphyDownload *download,
-                               char *suggested_filename);
-  void (* completed)  (EphyDownload *download);
-  void (* error)      (EphyDownload *download,
-                       gint error_code,
-                       gint error_detail,
-                       char *reason);
 };
 
 typedef enum
