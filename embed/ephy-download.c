@@ -65,8 +65,11 @@ enum
   PROP_ACTION,
   PROP_START_TIME,
   PROP_WINDOW,
-  PROP_WIDGET
+  PROP_WIDGET,
+  LAST_PROP
 };
+
+static GParamSpec *obj_properties[LAST_PROP];
 
 static void
 ephy_download_get_property (GObject    *object,
@@ -349,7 +352,7 @@ ephy_download_set_destination_uri (EphyDownload *download,
   g_return_if_fail (destination != NULL);
 
   webkit_download_set_destination (download->download, destination);
-  g_object_notify (G_OBJECT (download), "destination");
+  g_object_notify_by_pspec (G_OBJECT (download), obj_properties[PROP_DESTINATION]);
 }
 
 /**
@@ -368,7 +371,7 @@ ephy_download_set_action (EphyDownload *download,
   g_return_if_fail (EPHY_IS_DOWNLOAD (download));
 
   download->action = action;
-  g_object_notify (G_OBJECT (download), "action");
+  g_object_notify_by_pspec (G_OBJECT (download), obj_properties[PROP_ACTION]);
 }
 
 /**
@@ -389,7 +392,7 @@ ephy_download_set_widget (EphyDownload *download,
   if (widget != NULL)
     download->widget = g_object_ref (widget);
 
-  g_object_notify (G_OBJECT (download), "widget");
+  g_object_notify_by_pspec (G_OBJECT (download), obj_properties[PROP_WIDGET]);
 }
 
 /**
@@ -625,30 +628,24 @@ ephy_download_class_init (EphyDownloadClass *klass)
    *
    * Internal WebKitDownload.
    */
-  g_object_class_install_property (object_class, PROP_DOWNLOAD,
-                                   g_param_spec_object ("download",
-                                                        "Internal WebKitDownload",
-                                                        "The WebKitDownload used internally by EphyDownload",
-                                                        WEBKIT_TYPE_DOWNLOAD,
-                                                        G_PARAM_READABLE |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
+  obj_properties[PROP_DOWNLOAD] =
+    g_param_spec_object ("download",
+                         "Internal WebKitDownload",
+                         "The WebKitDownload used internally by EphyDownload",
+                         WEBKIT_TYPE_DOWNLOAD,
+                         G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * EphyDownload::destination:
    *
    * The destination URI where to store the download.
    */
-  g_object_class_install_property (object_class, PROP_DESTINATION,
-                                   g_param_spec_string ("destination",
-                                                        "Destination",
-                                                        "Destination file URI",
-                                                        NULL,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
+  obj_properties[PROP_DESTINATION] =
+    g_param_spec_string ("destination",
+                         "Destination",
+                         "Destination file URI",
+                         NULL,
+                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
 
   /**
    * EphyDownload::action:
@@ -657,16 +654,13 @@ ephy_download_class_init (EphyDownloadClass *klass)
    * open files" is enabled, or when ephy_download_do_download_action () is
    * called.
    */
-  g_object_class_install_property (object_class, PROP_ACTION,
-                                   g_param_spec_enum ("action",
-                                                      "Download action",
-                                                      "Action to take when download finishes",
-                                                      EPHY_TYPE_DOWNLOAD_ACTION_TYPE,
-                                                      EPHY_DOWNLOAD_ACTION_NONE,
-                                                      G_PARAM_READABLE |
-                                                      G_PARAM_STATIC_NAME |
-                                                      G_PARAM_STATIC_NICK |
-                                                      G_PARAM_STATIC_BLURB));
+  obj_properties[PROP_ACTION] =
+    g_param_spec_enum ("action",
+                       "Download action",
+                       "Action to take when download finishes",
+                       EPHY_TYPE_DOWNLOAD_ACTION_TYPE,
+                       EPHY_DOWNLOAD_ACTION_NONE,
+                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * EphyDownload::start-time:
@@ -674,15 +668,12 @@ ephy_download_class_init (EphyDownloadClass *klass)
    * User time when the download started, useful for launching applications
    * aware of focus stealing.
    */
-  g_object_class_install_property (object_class, PROP_START_TIME,
-                                   g_param_spec_uint ("start-time",
-                                                      "Event start time",
-                                                      "Time for focus-stealing prevention.",
-                                                      0, G_MAXUINT32, 0,
-                                                      G_PARAM_READABLE |
-                                                      G_PARAM_STATIC_NAME |
-                                                      G_PARAM_STATIC_NICK |
-                                                      G_PARAM_STATIC_BLURB));
+  obj_properties[PROP_START_TIME] =
+    g_param_spec_uint ("start-time",
+                       "Event start time",
+                       "Time for focus-stealing prevention.",
+                       0, G_MAXUINT32, 0,
+                       G_PARAM_READABLE | G_PARAM_STATIC_STRINGS);
 
   /**
    * EphyDownload:window:
@@ -690,16 +681,12 @@ ephy_download_class_init (EphyDownloadClass *klass)
    * Window that produced the download, the download will be shown in its
    * parent window.
    */
-  g_object_class_install_property (object_class, PROP_WINDOW,
-                                   g_param_spec_object ("window",
-                                                        "A GtkWindow",
-                                                        "Window that produced this download.",
-                                                        GTK_TYPE_WINDOW,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_CONSTRUCT_ONLY |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
+  obj_properties[PROP_WINDOW] =
+    g_param_spec_object ("window",
+                         "A GtkWindow",
+                         "Window that produced this download.",
+                         GTK_TYPE_WINDOW,
+                         G_PARAM_READWRITE | G_PARAM_CONSTRUCT_ONLY | G_PARAM_STATIC_STRINGS);
 
   /**
    * EphyDownload::widget:
@@ -707,15 +694,14 @@ ephy_download_class_init (EphyDownloadClass *klass)
    * An EphyDownloadWidget -or any other GtkWidget- that is representing this
    * EphyDownload to the user.
    */
-  g_object_class_install_property (object_class, PROP_WIDGET,
-                                   g_param_spec_object ("widget",
-                                                        "A GtkWidget",
-                                                        "GtkWidget showing this download.",
-                                                        GTK_TYPE_WIDGET,
-                                                        G_PARAM_READWRITE |
-                                                        G_PARAM_STATIC_NAME |
-                                                        G_PARAM_STATIC_NICK |
-                                                        G_PARAM_STATIC_BLURB));
+  obj_properties[PROP_WIDGET] =
+    g_param_spec_object ("widget",
+                         "A GtkWidget",
+                         "GtkWidget showing this download.",
+                         GTK_TYPE_WIDGET,
+                         G_PARAM_READWRITE | G_PARAM_STATIC_STRINGS);
+
+  g_object_class_install_properties (object_class, LAST_PROP, obj_properties);
 
   /**
    * EphyDownload::completed:
