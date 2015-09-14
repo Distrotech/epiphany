@@ -37,13 +37,10 @@
 #include <glib/gi18n.h>
 #include <string.h>
 
-G_DEFINE_TYPE (EphyDownload, ephy_download, G_TYPE_OBJECT)
-
-#define EPHY_DOWNLOAD_GET_PRIVATE(o) \
-  (G_TYPE_INSTANCE_GET_PRIVATE ((o), EPHY_TYPE_DOWNLOAD, EphyDownloadPrivate))
-
-struct _EphyDownloadPrivate
+struct _EphyDownload
 {
+  GObject parent;
+
   WebKitDownload *download;
 
   char *destination;
@@ -57,6 +54,8 @@ struct _EphyDownloadPrivate
 
   guint inhibitor_cookie;
 };
+
+G_DEFINE_TYPE (EphyDownload, ephy_download, G_TYPE_OBJECT)
 
 enum
 {
@@ -76,17 +75,15 @@ ephy_download_get_property (GObject    *object,
                             GParamSpec *pspec)
 {
   EphyDownload *download;
-  EphyDownloadPrivate *priv;
 
   download = EPHY_DOWNLOAD (object);
-  priv = download->priv;
 
   switch (property_id) {
     case PROP_WIDGET:
-      g_value_set_object (value, priv->widget);
+      g_value_set_object (value, download->widget);
       break;
     case PROP_WINDOW:
-      g_value_set_object (value, priv->window);
+      g_value_set_object (value, download->window);
       break;
     case PROP_DOWNLOAD:
       g_value_set_object (value, ephy_download_get_webkit_download (download));
@@ -123,7 +120,7 @@ ephy_download_set_property (GObject      *object,
       ephy_download_set_action (download, g_value_get_enum (value));
       break;
     case PROP_WINDOW:
-      download->priv->window = g_value_dup_object (value);
+      download->window = g_value_dup_object (value);
       break;
     case PROP_WIDGET:
       ephy_download_set_widget (download, g_value_get_object (value));
@@ -155,7 +152,7 @@ ephy_download_get_content_type (EphyDownload *download)
   char *content_type = NULL;
   GError *error = NULL;
 
-  response = webkit_download_get_response (download->priv->download);
+  response = webkit_download_get_response (download->download);
   if (response) {
     content_type = g_strdup (webkit_uri_response_get_mime_type (response));
 
@@ -165,7 +162,7 @@ ephy_download_get_content_type (EphyDownload *download)
       return content_type;
   }
 
-  destination_uri = webkit_download_get_destination (download->priv->download);
+  destination_uri = webkit_download_get_destination (download->download);
   if (!destination_uri)
     return NULL;
 
@@ -330,7 +327,7 @@ set_destination_uri_for_suggested_filename (EphyDownload *download, const char *
   g_free (destination_filename);
 
   g_assert (destination_uri);
-  webkit_download_set_destination (download->priv->download, destination_uri);
+  webkit_download_set_destination (download->download, destination_uri);
   g_free (destination_uri);
 
   return TRUE;
@@ -351,7 +348,7 @@ ephy_download_set_destination_uri (EphyDownload *download,
   g_return_if_fail (EPHY_IS_DOWNLOAD (download));
   g_return_if_fail (destination != NULL);
 
-  webkit_download_set_destination (download->priv->download, destination);
+  webkit_download_set_destination (download->download, destination);
   g_object_notify (G_OBJECT (download), "destination");
 }
 
@@ -370,7 +367,7 @@ ephy_download_set_action (EphyDownload *download,
 {
   g_return_if_fail (EPHY_IS_DOWNLOAD (download));
 
-  download->priv->action = action;
+  download->action = action;
   g_object_notify (G_OBJECT (download), "action");
 }
 
@@ -387,13 +384,13 @@ ephy_download_set_widget (EphyDownload *download,
 {
   g_return_if_fail (EPHY_IS_DOWNLOAD (download));
 
-  if (download->priv->widget != NULL)
-    g_object_unref (download->priv->widget);
+  if (download->widget != NULL)
+    g_object_unref (download->widget);
 
-  download->priv->widget = NULL;
+  download->widget = NULL;
 
   if (widget != NULL)
-    download->priv->widget = g_object_ref (widget);
+    download->widget = g_object_ref (widget);
 
   g_object_notify (G_OBJECT (download), "widget");
 }
@@ -411,7 +408,7 @@ ephy_download_get_widget (EphyDownload *download)
 {
   g_return_val_if_fail (EPHY_IS_DOWNLOAD (download), NULL);
 
-  return download->priv->widget;
+  return download->widget;
 }
 
 /**
@@ -427,7 +424,7 @@ ephy_download_get_webkit_download (EphyDownload *download)
 {
   g_return_val_if_fail (EPHY_IS_DOWNLOAD (download), NULL);
 
-  return download->priv->download;
+  return download->download;
 }
 
 /**
@@ -444,7 +441,7 @@ ephy_download_get_window (EphyDownload *download)
 {
   g_return_val_if_fail (EPHY_IS_DOWNLOAD (download), NULL);
 
-  return download->priv->window;
+  return download->window;
 }
 
 /**
@@ -460,7 +457,7 @@ ephy_download_get_destination_uri (EphyDownload *download)
 {
   g_return_val_if_fail (EPHY_IS_DOWNLOAD (download), NULL);
 
-  return webkit_download_get_destination (download->priv->download);
+  return webkit_download_get_destination (download->download);
 }
 
 /**
@@ -479,7 +476,7 @@ ephy_download_get_action (EphyDownload *download)
 {
   g_return_val_if_fail (EPHY_IS_DOWNLOAD (download), EPHY_DOWNLOAD_ACTION_NONE);
 
-  return download->priv->action;
+  return download->action;
 }
 
 /**
@@ -496,41 +493,37 @@ ephy_download_get_start_time (EphyDownload *download)
 {
   g_return_val_if_fail (EPHY_IS_DOWNLOAD (download), 0);
 
-  return download->priv->start_time;
+  return download->start_time;
 }
 
 static void
 acquire_session_inhibitor (EphyDownload *download)
 {
-  EphyDownloadPrivate *priv;
   EphyEmbedShell *shell;
 
-  priv = download->priv;
   shell = ephy_embed_shell_get_default ();
 
-  if (priv->inhibitor_cookie)
+  if (download->inhibitor_cookie)
     return;
 
-  priv->inhibitor_cookie = gtk_application_inhibit (GTK_APPLICATION (shell),
-                                                    priv->window,
-                                                    GTK_APPLICATION_INHIBIT_LOGOUT | GTK_APPLICATION_INHIBIT_SUSPEND,
-                                                    "Downloading");
+  download->inhibitor_cookie = gtk_application_inhibit (GTK_APPLICATION (shell),
+                                                        download->window,
+                                                        GTK_APPLICATION_INHIBIT_LOGOUT | GTK_APPLICATION_INHIBIT_SUSPEND,
+                                                        "Downloading");
 }
 
 static void
 release_session_inhibitor (EphyDownload *download)
 {
-  EphyDownloadPrivate *priv;
   EphyEmbedShell *shell;
 
-  priv = download->priv;
   shell = ephy_embed_shell_get_default ();
 
-  if (!priv->inhibitor_cookie)
+  if (!download->inhibitor_cookie)
     return;
 
-  gtk_application_uninhibit (GTK_APPLICATION (shell), priv->inhibitor_cookie);
-  priv->inhibitor_cookie = 0;
+  gtk_application_uninhibit (GTK_APPLICATION (shell), download->inhibitor_cookie);
+  download->inhibitor_cookie = 0;
 }
 
 /**
@@ -544,7 +537,7 @@ ephy_download_cancel (EphyDownload *download)
 {
   g_return_if_fail (EPHY_IS_DOWNLOAD (download));
 
-  webkit_download_cancel (download->priv->download);
+  webkit_download_cancel (download->download);
 }
 
 /**
@@ -565,27 +558,24 @@ ephy_download_do_download_action (EphyDownload *download,
 {
     GFile *destination;
     const char *destination_uri;
-    EphyDownloadPrivate *priv;
     gboolean ret = FALSE;
 
-    priv = download->priv;
-
-    destination_uri = webkit_download_get_destination (priv->download);
+    destination_uri = webkit_download_get_destination (download->download);
     destination = g_file_new_for_uri (destination_uri);
 
-    switch ((action ? action : priv->action)) {
+    switch ((action ? action : download->action)) {
       case EPHY_DOWNLOAD_ACTION_AUTO:
         LOG ("ephy_download_do_download_action: auto");
         ret = ephy_download_do_download_action (download, decide_action_from_mime (download));
         break;
       case EPHY_DOWNLOAD_ACTION_BROWSE_TO:
         LOG ("ephy_download_do_download_action: browse_to");
-        ret = ephy_file_browse_to (destination, priv->start_time);
+        ret = ephy_file_browse_to (destination, download->start_time);
         break;
       case EPHY_DOWNLOAD_ACTION_OPEN:
         LOG ("ephy_download_do_download_action: open");
         ret = ephy_embed_shell_launch_handler (ephy_embed_shell_get_default (), 
-                                               destination, NULL, priv->start_time);
+                                               destination, NULL, download->start_time);
         break;
       case EPHY_DOWNLOAD_ACTION_NONE:
         LOG ("ephy_download_do_download_action: none");
@@ -609,28 +599,25 @@ static void
 ephy_download_dispose (GObject *object)
 {
   EphyDownload *download = EPHY_DOWNLOAD (object);
-  EphyDownloadPrivate *priv;
 
   LOG ("EphyDownload disposed %p", object);
 
-  priv = download->priv;
-
   release_session_inhibitor (download);
 
-  if (priv->download) {
-    g_signal_handlers_disconnect_matched (priv->download, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, download);
-    g_object_unref (priv->download);
-    priv->download = NULL;
+  if (download->download) {
+    g_signal_handlers_disconnect_matched (download->download, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, download);
+    g_object_unref (download->download);
+    download->download = NULL;
   }
 
-  if (priv->window) {
-    g_object_unref (priv->window);
-    priv->window = NULL;
+  if (download->window) {
+    g_object_unref (download->window);
+    download->window = NULL;
   }
 
-  if (priv->widget) {
-    g_object_unref (priv->widget);
-    priv->widget = NULL;
+  if (download->widget) {
+    g_object_unref (download->widget);
+    download->widget = NULL;
   }
 
   G_OBJECT_CLASS (ephy_download_parent_class)->dispose (object);
@@ -640,8 +627,6 @@ static void
 ephy_download_class_init (EphyDownloadClass *klass)
 {
   GObjectClass *object_class = G_OBJECT_CLASS (klass);
-
-  g_type_class_add_private (klass, sizeof (EphyDownloadPrivate));
 
   object_class->get_property = ephy_download_get_property;
   object_class->set_property = ephy_download_set_property;
@@ -788,18 +773,16 @@ ephy_download_class_init (EphyDownloadClass *klass)
 static void
 ephy_download_init (EphyDownload *download)
 {
-  download->priv = EPHY_DOWNLOAD_GET_PRIVATE (download);
-
   LOG ("EphyDownload initialising %p", download);
 
-  download->priv->download = NULL;
+  download->download = NULL;
 
-  download->priv->action = EPHY_DOWNLOAD_ACTION_NONE;
+  download->action = EPHY_DOWNLOAD_ACTION_NONE;
 
-  download->priv->start_time = gtk_get_current_event_time ();
+  download->start_time = gtk_get_current_event_time ();
 
-  download->priv->window = NULL;
-  download->priv->widget = NULL;
+  download->window = NULL;
+  download->widget = NULL;
 }
 
 static void
@@ -830,17 +813,13 @@ static void
 download_finished_cb (WebKitDownload *wk_download,
                       EphyDownload *download)
 {
-  EphyDownloadPrivate *priv;
-
-  priv = download->priv;
-
   g_signal_emit_by_name (download, "completed");
 
   if (g_settings_get_boolean (EPHY_SETTINGS_MAIN, EPHY_PREFS_AUTO_DOWNLOADS) &&
-      priv->action == EPHY_DOWNLOAD_ACTION_NONE)
+      download->action == EPHY_DOWNLOAD_ACTION_NONE)
     ephy_download_do_download_action (download, EPHY_DOWNLOAD_ACTION_AUTO);
   else
-    ephy_download_do_download_action (download, priv->action);
+    ephy_download_do_download_action (download, download->action);
 
   release_session_inhibitor (download);
 }
@@ -892,7 +871,7 @@ ephy_download_new (WebKitDownload *download,
                     G_CALLBACK (download_failed_cb),
                     ephy_download);
 
-  ephy_download->priv->download = g_object_ref (download);
+  ephy_download->download = g_object_ref (download);
   g_object_set_data (G_OBJECT (download), "ephy-download-set", GINT_TO_POINTER (TRUE));
 
   return ephy_download;
