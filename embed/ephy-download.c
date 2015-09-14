@@ -384,10 +384,7 @@ ephy_download_set_widget (EphyDownload *download,
 {
   g_return_if_fail (EPHY_IS_DOWNLOAD (download));
 
-  if (download->widget != NULL)
-    g_object_unref (download->widget);
-
-  download->widget = NULL;
+  g_clear_object(&download->widget);
 
   if (widget != NULL)
     download->widget = g_object_ref (widget);
@@ -604,21 +601,12 @@ ephy_download_dispose (GObject *object)
 
   release_session_inhibitor (download);
 
-  if (download->download) {
+  if (download->download)
     g_signal_handlers_disconnect_matched (download->download, G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, download);
-    g_object_unref (download->download);
-    download->download = NULL;
-  }
 
-  if (download->window) {
-    g_object_unref (download->window);
-    download->window = NULL;
-  }
-
-  if (download->widget) {
-    g_object_unref (download->widget);
-    download->widget = NULL;
-  }
+  g_clear_object(&download->download);
+  g_clear_object(&download->window);
+  g_clear_object(&download->widget);
 
   G_OBJECT_CLASS (ephy_download_parent_class)->dispose (object);
 }
