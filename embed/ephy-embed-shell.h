@@ -58,9 +58,6 @@ typedef enum
 struct _EphyEmbedShell
 {
   GtkApplication parent;
-
-  /*< private >*/
-  EphyEmbedShellPrivate *priv;
 };
 
 struct _EphyEmbedShellClass
