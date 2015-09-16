@@ -833,8 +833,7 @@ ephy_embed_shell_class_init (EphyEmbedShellClass *klass)
                   EPHY_TYPE_EMBED_SHELL,
                   G_SIGNAL_RUN_FIRST | G_SIGNAL_RUN_LAST,
                   G_STRUCT_OFFSET (EphyEmbedShellClass, prepare_close),
-                  NULL, NULL,
-                  g_cclosure_marshal_VOID__VOID,
+                  NULL, NULL, NULL,
                   G_TYPE_NONE, 0);
 
 /**
@@ -849,8 +848,7 @@ ephy_embed_shell_class_init (EphyEmbedShellClass *klass)
                   EPHY_TYPE_EMBED_SHELL,
                   G_SIGNAL_RUN_FIRST,
                   G_STRUCT_OFFSET (EphyEmbedShellClass, restored_window),
-                  NULL, NULL,
-                  g_cclosure_marshal_VOID__VOID,
+                  NULL, NULL, NULL,
                   G_TYPE_NONE,
                   0);
 
@@ -867,8 +865,7 @@ ephy_embed_shell_class_init (EphyEmbedShellClass *klass)
     g_signal_new ("web-view-created",
                   EPHY_TYPE_EMBED_SHELL,
                   G_SIGNAL_RUN_LAST,
-                  0, NULL, NULL,
-                  g_cclosure_marshal_VOID__OBJECT,
+                  0, NULL, NULL, NULL,
                   G_TYPE_NONE, 1,
                   EPHY_TYPE_WEB_VIEW);
 
@@ -884,8 +881,7 @@ ephy_embed_shell_class_init (EphyEmbedShellClass *klass)
     g_signal_new ("page-created",
                   EPHY_TYPE_EMBED_SHELL,
                   G_SIGNAL_RUN_FIRST,
-                  0, NULL, NULL,
-                  g_cclosure_marshal_generic,
+                  0, NULL, NULL, NULL,
                   G_TYPE_NONE, 2,
                   G_TYPE_UINT64,
                   EPHY_TYPE_WEB_EXTENSION_PROXY);
@@ -902,8 +898,7 @@ ephy_embed_shell_class_init (EphyEmbedShellClass *klass)
     g_signal_new ("allow-tls-certificate",
                   EPHY_TYPE_EMBED_SHELL,
                   G_SIGNAL_RUN_FIRST,
-                  0, NULL, NULL,
-                  g_cclosure_marshal_generic,
+                  0, NULL, NULL, NULL,
                   G_TYPE_NONE, 1,
                   G_TYPE_UINT64);
 
@@ -923,8 +918,7 @@ ephy_embed_shell_class_init (EphyEmbedShellClass *klass)
     g_signal_new ("form-auth-data-save-requested",
                   EPHY_TYPE_EMBED_SHELL,
                   G_SIGNAL_RUN_FIRST,
-                  0, NULL, NULL,
-                  g_cclosure_marshal_generic,
+                  0, NULL, NULL, NULL,
                   G_TYPE_NONE, 4,
                   G_TYPE_UINT,
                   G_TYPE_UINT64,
