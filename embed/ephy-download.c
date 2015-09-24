@@ -814,12 +814,10 @@ download_failed_cb (WebKitDownload *wk_download,
                     GError *error,
                     EphyDownload *download)
 {
-  gboolean ret = FALSE;
-
   g_signal_handlers_disconnect_by_func (wk_download, download_finished_cb, download);
 
   LOG ("error (%d - %d)! %s", error->code, 0, error->message);
-  g_signal_emit (download, signals[ERROR], 0, 0, error->code, error->message, &ret);
+  g_signal_emit (download, signals[ERROR], 0);
 
   release_session_inhibitor (download);
 }
