@@ -712,7 +712,7 @@ ephy_download_class_init (EphyDownloadClass *klass)
   g_signal_new ("filename-suggested",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_LAST,
-                NULL, NULL, NULL, NULL,
+                0, NULL, NULL, NULL,
                 G_TYPE_NONE,
                 1,
                 G_TYPE_STRING | G_SIGNAL_TYPE_STATIC_SCOPE);
@@ -725,7 +725,7 @@ ephy_download_class_init (EphyDownloadClass *klass)
   g_signal_new ("completed",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_LAST,
-                NULL, NULL, NULL, NULL,
+                0, NULL, NULL, NULL,
                 G_TYPE_NONE,
                 0);
   /**
@@ -736,7 +736,7 @@ ephy_download_class_init (EphyDownloadClass *klass)
   g_signal_new ("error",
                 G_OBJECT_CLASS_TYPE (object_class),
                 G_SIGNAL_RUN_LAST,
-                NULL, NULL, NULL, NULL,
+                0, NULL, NULL, NULL,
                 G_TYPE_NONE,
                 0);
 }
